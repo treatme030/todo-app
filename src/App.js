@@ -3,49 +3,62 @@ import TodoInsert from "./components/TodoInsert";
 import TodoList from "./components/TodoList";
 import TodoTemplate from "./components/TodoTemplate";
 
-function App() {
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      text: '리액트의 기초 알아보기',
-      checked: true,
-    },
-    {
-      id: 2,
-      text: '컴포넌트 스타일링 해보기',
-      checked: true,
-    },
-
-    {
-      id: 3,
-      text: '리덕스 리액트에 적용하기',
+//많은 데이터 생성하기
+const createBulkTodos = () => {
+  const array = []
+  for(let i = 1; i <= 2500; i++){
+    array.push({
+      id: i,
+      text: `할 일 ${i}`,
       checked: false,
-    },
-  ])
+    })
+  }
+  return array
+}
 
-  const nextId = useRef(4)
+//성능 최적화를 위한 reducer 사용하기 
+// const todoReducer = (todos, action) => {
+//   switch(action.type){
+//     case 'INSERT':
+//       return todos.concat(action.todo)
+//     case 'REMOVE':
+//       return todos.filter(todo => todo.id !== action.id)
+//     case 'TOGGLE':
+//       return todos.map(todo => 
+//         todo.id === action.id ? {...todo, checked: !todo.checked} : todo)
+//     default:
+//       return todos;
+//   }
+// }
+
+function App() {
+  const [todos, setTodos] = useState(createBulkTodos)
+
+  const nextId = useRef(2501)
 
   //일정 추가
   const onInsert = useCallback((text) => {
-        const todo = {
-          id: nextId.current,
-          text,
-          checked: false,
-        }
-        setTodos(todos.concat(todo))
-        nextId.current += 1
-  },[todos])
+    const todo = {
+      id: nextId.current,
+      text,
+      checked: false,
+    }
+    //성능 최적화를 위한 함수형 업데이트 
+    setTodos(todos => todos.concat(todo))
+    nextId.current += 1
+  },[])
 
   //일정 삭제
   const onRemove = useCallback((id) => {
-    //함수형 업데이트 
+    //성능 최적화를 위한 함수형 업데이트 
     setTodos(todos => todos.filter(todo => todo.id !== id))
-  },[todos])
+  },[])
 
   //일정 수정
   const onToggle = useCallback((id) => {
+    //성능 최적화를 위한 함수형 업데이트 
     setTodos(todos => todos.map(todo => todo.id === id ? {...todo, checked: !todo.checked} : todo))
-  },[todos])
+  },[])
 
   return (
     <TodoTemplate>
