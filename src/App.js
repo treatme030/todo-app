@@ -38,12 +38,13 @@ function App() {
 
   //일정 삭제
   const onRemove = useCallback((id) => {
-    setTodos(todos.filter(todo => todo.id !== id))
+    //함수형 업데이트 
+    setTodos(todos => todos.filter(todo => todo.id !== id))
   },[todos])
 
   //일정 수정
   const onToggle = useCallback((id) => {
-    setTodos(todos.map(todo => todo.id === id ? {...todo, checked: !todo.checked} : todo))
+    setTodos(todos => todos.map(todo => todo.id === id ? {...todo, checked: !todo.checked} : todo))
   },[todos])
 
   return (
